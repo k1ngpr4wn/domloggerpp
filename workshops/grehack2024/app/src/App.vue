@@ -156,6 +156,7 @@ const loadChallengeScript = async (scriptPath) => {
 const highlightCode = () => {
   const codeBlocks = document.querySelectorAll("code");
   for (const codeBlock of codeBlocks) {
+    delete codeBlock.dataset.highlighted;
     hljs.highlightElement(codeBlock);
   }
 };
