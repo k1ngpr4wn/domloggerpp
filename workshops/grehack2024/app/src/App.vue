@@ -2,6 +2,20 @@
   <div class="min-h-screen flex flex-col items-center py-10" :style="{ backgroundColor: '#0D1117' }">
     <div class="text-center mb-6">
       <h1 class="text-3xl font-bold mb-4 text-white">DOMLogger++ | GreHack 2024 Workshop</h1>
+      <div class="flex flex-col items-center gap-2 mb-4">
+        <label for="challenge-jump" class="text-sm font-semibold text-gray-200">Jump to challenge</label>
+        <select
+          id="challenge-jump"
+          v-model="selectedChallengeId"
+          class="w-72 rounded-md border border-gray-500 bg-gray-900 px-3 py-2 text-sm text-gray-200 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          @change="handleChallengeSelect"
+        >
+          <option value="">Select a challenge</option>
+          <option v-for="challenge in challenges" :key="challenge.id" :value="challenge.id">
+            {{ challenge.title }}
+          </option>
+        </select>
+      </div>
       <div class="w-full max-w-4xl bg-gray-600 h-2 rounded-full mb-6">
         <div class="bg-green-500 h-2 rounded-full" :style="{ width: progress + '%' }"></div>
       </div>
@@ -93,6 +107,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 const challenges = ref([]);
 const selectedChallenge = ref(null);
 const challengeScript = ref('');
+const selectedChallengeId = ref('');
 
 const loadChallengeState = () => {
   try {
@@ -120,7 +135,10 @@ const saveSelectedChallenge = () => {
   }
 };
 
-watch(selectedChallenge, saveSelectedChallenge);
+watch(selectedChallenge, (challenge) => {
+  saveSelectedChallenge();
+  selectedChallengeId.value = challenge ? String(challenge.id) : '';
+});
 
 const loadChallengeScript = async (scriptPath) => {
   try {
@@ -155,14 +173,38 @@ const showDetails = (challenge) => {
   if (challenge.script) loadChallengeScript(`/challenges/${challenge.script}`);
 };
 
-const goBackToList = () => {
+const resetChallengeView = () => {
   removeChallengeListeners();
-  selectedChallenge.value = null;
-  localStorage.removeItem('selectedChallengeId');
-  document.getElementById('challenge-html').innerHTML = '';
+  const challengeContainer = document.getElementById('challenge-html');
+  if (challengeContainer) {
+    challengeContainer.innerHTML = '';
+  }
   const scriptElement = document.getElementById('challenge-script');
   if (scriptElement) scriptElement.remove();
   challengeScript.value = '';
+};
+
+const goBackToList = () => {
+  selectedChallenge.value = null;
+  localStorage.removeItem('selectedChallengeId');
+  resetChallengeView();
+};
+
+const handleChallengeSelect = () => {
+  if (!selectedChallengeId.value) {
+    goBackToList();
+    return;
+  }
+
+  const selectedId = parseInt(selectedChallengeId.value, 10);
+  const challenge = challenges.value.find((item) => item.id === selectedId);
+  if (!challenge) return;
+
+  if (selectedChallenge.value && selectedChallenge.value.id !== challenge.id) {
+    resetChallengeView();
+  }
+
+  showDetails(challenge);
 };
 
 const clearCurrentChallenge = () => {
@@ -304,4 +346,3 @@ button {
   text-align: center;
 }
 </style>
-
