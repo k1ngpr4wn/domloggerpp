@@ -3,14 +3,13 @@
     <div class="text-center mb-6">
       <h1 class="text-3xl font-bold mb-4 text-white">DOMLogger++ | GreHack 2024 Workshop</h1>
       <div class="flex flex-col items-center gap-2 mb-4">
-        <label for="challenge-jump" class="text-sm font-semibold text-gray-200">Jump to challenge</label>
         <select
           id="challenge-jump"
           v-model="selectedChallengeId"
-          class="w-72 rounded-md border border-gray-500 bg-gray-900 px-3 py-2 text-sm text-gray-200 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+          class="w-80 rounded-md border border-gray-500 bg-gray-900 px-3 py-2 text-sm text-gray-200 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
           @change="handleChallengeSelect"
         >
-          <option value="">Select a challenge</option>
+          <option value="">Home</option>
           <option v-for="challenge in challenges" :key="challenge.id" :value="challenge.id">
             {{ challenge.title }}
           </option>
@@ -31,12 +30,6 @@
     </div>
 
     <div v-else class="bg-gray-800 shadow rounded-lg p-6 w-3/5 max-w-5xl relative">
-      <button
-        :class="selectedChallenge.solved ? 'text-green-500' : 'text-red-500'"
-        class="mb-4 back-button"
-        @click="goBackToList"
-      ><b>← Back to List</b></button>
-      <h2 class="text-2xl font-bold mb-2 text-white">{{ selectedChallenge.title }}</h2>
       <p class="text-gray-300 mb-4" v-html="selectedChallenge.description"></p>
 
       <h3 v-if="selectedChallenge.conditions.length" class="text-lg font-semibold mb-4 text-white">
@@ -331,6 +324,10 @@ onMounted(async () => {
   padding: 0;
   padding-top: 20px;
   margin: 0;
+
+  white-space: pre-wrap; /* Preserves spaces and breaks lines as needed */
+  overflow-wrap: break-word; /* Breaks long, unbreakable strings (like long URLs) */
+  overflow-x: auto; /* Adds a horizontal scrollbar if needed as a fallback */
 }
 
 .hljs {
